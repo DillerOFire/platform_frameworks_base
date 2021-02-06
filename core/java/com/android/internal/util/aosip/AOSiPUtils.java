@@ -16,8 +16,6 @@
 
 package com.android.internal.util.aosip;
 
-import android.app.ActivityManagerNative;
-import android.app.UiModeManager;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
@@ -46,7 +44,6 @@ import android.util.TypedValue;
 
 import com.android.internal.R;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -186,7 +183,7 @@ public class AOSiPUtils {
     // Enable/disable component
     public static void setComponentState(Context context, String packageName,
             String componentClassName, boolean enabled) {
-        PackageManager pm = context.getApplicationContext().getPackageManager();
+        PackageManager pm  = context.getApplicationContext().getPackageManager();
         ComponentName componentName = new ComponentName(packageName, componentClassName);
         int state = enabled ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
@@ -211,11 +208,8 @@ public class AOSiPUtils {
     public static boolean isThemeEnabled(String packageName) {
         mOverlayService = new OverlayManager();
         try {
-            ArrayList<OverlayInfo> infos = new ArrayList<OverlayInfo>();
-            infos.addAll(mOverlayService.getOverlayInfosForTarget("android",
-                    UserHandle.myUserId()));
-            infos.addAll(mOverlayService.getOverlayInfosForTarget("com.android.systemui",
-                    UserHandle.myUserId()));
+            List<OverlayInfo> infos = mOverlayService.getOverlayInfosForTarget("android",
+                    UserHandle.myUserId());
             for (int i = 0, size = infos.size(); i < size; i++) {
                 if (infos.get(i).packageName.equals(packageName)) {
                     return infos.get(i).isEnabled();
@@ -244,15 +238,6 @@ public class AOSiPUtils {
                 throws RemoteException {
             return mService.getOverlayInfosForTarget(target, userId);
         }
-    }
-
-    // Method to detect whether the system dark theme is enabled or not
-    public static boolean isDarkTheme(Context context) {
-        UiModeManager mUiModeManager =
-                context.getSystemService(UiModeManager.class);
-        if (mUiModeManager == null) return false;
-        int mode = mUiModeManager.getNightMode();
-        return (mode == UiModeManager.MODE_NIGHT_YES);
     }
 
     public static int getThemeAccentColor (final Context context) {
